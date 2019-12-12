@@ -31,6 +31,27 @@ class TodoView extends LitElement {
 
   render() {
     return html`
+      <style>
+        todo-view {
+          display: block;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        todo-view .input-layout {
+          width: 100%;
+          display: flex;
+        }
+        todo-view .input-layout vaadin-text-field {
+          flex: 1;
+          margin-right: var(--spacing);
+        }
+        todo-view .todos-list {
+          margin-top: var(--spacing);
+        }
+        todo-view .visibility-filters {
+          margin-top: calc(4 * var(--spacing));
+        }
+      </style>
       <div class="input-layout" @keyup=${this.shortcutListener}>
         <vaadin-text-field
           placeholder="Task"
@@ -70,7 +91,15 @@ class TodoView extends LitElement {
           `;
         })}
       </vaadin-radio-group>
+
+      <vaadin-button @click=${this.clearCompleted}>
+        Clear Completed
+      </vaadin-button>
     `;
+  }
+
+  clearCompleted() {
+    this.todos = this.todos.filter((todo) => !todo.complete);
   }
 
   filterChanged(e) {
@@ -89,7 +118,7 @@ class TodoView extends LitElement {
   }
 
   updateTodoStatus(updatedTodo, complete) {
-    this.todos.map((todo) => {
+    this.todos = this.todos.map((todo) => {
       return updatedTodo === todo ? { ...updatedTodo, complete } : todo;
     });
   }
@@ -116,6 +145,10 @@ class TodoView extends LitElement {
 
       this.task = "";
     }
+  }
+
+  createRenderRoot() {
+    return this;
   }
 }
 
