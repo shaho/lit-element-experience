@@ -1,18 +1,15 @@
 import { LitElement, html } from "lit-element";
-
 import "@vaadin/vaadin-text-field";
 import "@vaadin/vaadin-button";
 import "@vaadin/vaadin-checkbox";
 import "@vaadin/vaadin-radio-button/vaadin-radio-button";
 import "@vaadin/vaadin-radio-button/vaadin-radio-group";
+import { connect } from "pwa-helpers";
 
-const VisibilityFilters = {
-  SHOW_ALL: "All",
-  SHOW_ACTIVE: "Active",
-  SHOW_COMPLETED: "Completed",
-};
+import { store } from "../redux/store";
+import { VisibilityFilters } from "../redux/reducer";
 
-class TodoView extends LitElement {
+class TodoView extends connect(store)(LitElement) {
   static get properties() {
     return {
       todos: { type: Array },
@@ -21,13 +18,18 @@ class TodoView extends LitElement {
     };
   }
 
-  constructor() {
-    super();
-
-    this.todos = [];
-    this.filter = VisibilityFilters.SHOW_ALL;
-    this.task = "";
+  stateChanged(state) {
+    this.todos = state.todos;
+    this.filter = state.filter;
   }
+
+  // constructor() {
+  //   super();
+
+  //   this.todos = [];
+  //   this.filter = VisibilityFilters.SHOW_ALL;
+  //   this.task = "";
+  // }
 
   render() {
     return html`
@@ -52,10 +54,11 @@ class TodoView extends LitElement {
           margin-top: calc(4 * var(--spacing));
         }
       </style>
+
       <div class="input-layout" @keyup=${this.shortcutListener}>
         <vaadin-text-field
           placeholder="Task"
-          value="${this.task}"
+          value=${this.task || ""}
           @change=${this.updateTask}
         ></vaadin-text-field>
         <vaadin-button theme="primary" @click=${this.addTodo}
